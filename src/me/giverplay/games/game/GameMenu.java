@@ -1,6 +1,8 @@
-package me.giverplay.games.menu;
+package me.giverplay.games.game;
 
+import me.giverplay.games.games.pong.Pong;
 import me.giverplay.games.graphics.Spritesheet;
+import me.giverplay.games.menu.Option;
 
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
@@ -9,7 +11,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 public class GameMenu extends Canvas implements MouseInputListener, Runnable
@@ -20,8 +21,10 @@ public class GameMenu extends Canvas implements MouseInputListener, Runnable
   private ArrayList<Option> options = new ArrayList<>();
 
   private Option selected = null;
-  private Thread threadMenu;
+  private Thread gameThread;
+  private Thread menuThread;
   private Graphics graphics;
+  private GameBase game;
   private JFrame frame;
 
   private int mx, my;
@@ -36,8 +39,8 @@ public class GameMenu extends Canvas implements MouseInputListener, Runnable
     this.addMouseMotionListener(this);
     this.addMouseListener(this);
 
-    threadMenu = new Thread(this);
-    threadMenu.start();
+    menuThread = new Thread(this);
+    menuThread.start();
   }
 
   private void setupFrame()
@@ -58,12 +61,25 @@ public class GameMenu extends Canvas implements MouseInputListener, Runnable
 
   private void setupOptions()
   {
-    options.add(new Option(10, 10, Spritesheet.getSprite(0, 0, 32, 32), "Pong", this, null));
-  }
+    int coe = Option.HEIGHT + 10;
 
+    options.add(new Option(10, 10, Spritesheet.getSprite(0, 0, 32, 32), "Pong", this, Pong.class));
+    options.add(new Option(10, coe + 10, Spritesheet.getSprite(32, 0, 32, 32), "Zelda", this, null));
+    options.add(new Option(10, coe * 2 + 10, Spritesheet.getSprite(64, 0, 32, 32), "Pac Man", this, null));
+  }
   public void showFrame()
   {
     this.frame.setVisible(true);
+  }
+
+  public GameBase getGame()
+  {
+    return game;
+  }
+
+  public void setGame(GameBase game)
+  {
+    this.game = game;
   }
 
   public void hideFrame()
@@ -119,19 +135,51 @@ public class GameMenu extends Canvas implements MouseInputListener, Runnable
     }
   }
 
+  public void stopGame()
+  {
+    runningGame = false;
+    gameThread.interrupt();
+
+    game = null;
+    menuThread = new Thread(this);
+    menuThread.start();
+    showFrame();
+  }
+
+  public boolean isRunningGame()
+  {
+    return runningGame;
+  }
+
   public Option getSelected()
   {
     return this.selected;
   }
 
-  @Override
-  public void mousePressed(MouseEvent e)
+  private void launchGame()
   {
     if(selected != null)
     {
+      runningGame = true;
       selected.launch();
-      System.out.println("aaa");
+      gameThread = new Thread(new GameTask());
+      gameThread.start();
+
+      try
+      {
+        menuThread.join();
+      }
+      catch(InterruptedException e2)
+      {
+        e2.printStackTrace();
+      }
     }
+  }
+
+  @Override
+  public void mousePressed(MouseEvent e)
+  {
+    launchGame();
   }
 
   @Override

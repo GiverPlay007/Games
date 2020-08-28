@@ -1,6 +1,6 @@
 package me.giverplay.games;
 
-import me.giverplay.games.menu.GameMenu;
+import me.giverplay.games.game.GameMenu;
 
 public class Main
 {

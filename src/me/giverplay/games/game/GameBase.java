@@ -1,4 +1,4 @@
-package me.giverplay.games;
+package me.giverplay.games.game;
 
 import javax.swing.JFrame;
 import java.awt.Canvas;
@@ -27,12 +27,14 @@ public abstract class GameBase extends Canvas
   private void setupFrame()
   {
     frame = new JFrame(name);
+    frame.add(this);
     frame.setIconImage(icon);
     frame.setResizable(false);
-    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     frame.setPreferredSize(new Dimension(w * scale, h * scale));
     frame.pack();
     frame.setLocationRelativeTo(null);
+    frame.setVisible(true);
   }
 
   @Override
@@ -64,6 +66,16 @@ public abstract class GameBase extends Canvas
   public int getScale()
   {
     return scale;
+  }
+
+  public int getScaledWidth()
+  {
+    return w * scale;
+  }
+
+  public int getScaledHeight()
+  {
+    return h * scale;
   }
 
   public abstract void tick();

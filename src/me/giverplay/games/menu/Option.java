@@ -1,8 +1,13 @@
 package me.giverplay.games.menu;
 
-import me.giverplay.games.GameBase;
+import jdk.nashorn.internal.runtime.ECMAException;
+import me.giverplay.games.Main;
+import me.giverplay.games.game.GameBase;
+import me.giverplay.games.game.GameMenu;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class Option
@@ -55,7 +60,20 @@ public class Option
 
   public void launch()
   {
+    menu.hideFrame();
 
+    try
+    {
+      menu.setGame(game.getConstructor(String.class, BufferedImage.class).newInstance(name, icon));
+    }
+    catch(Exception e)
+    {
+      System.out.println("Erro ao lançar jogo");
+      System.out.println("Erro: " + e.getCause());
+      System.out.println("Mensagem: " + e.getMessage());
+
+      menu.showFrame();
+    }
   }
 
   private int getLoc(Graphics g)
