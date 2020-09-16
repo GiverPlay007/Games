@@ -1,6 +1,7 @@
 package me.giverplay.games.game;
 
 import me.giverplay.games.Main;
+import me.giverplay.games.menu.GameMenu;
 
 public class GameTask implements Runnable
 {

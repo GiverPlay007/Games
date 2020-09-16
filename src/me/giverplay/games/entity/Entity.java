@@ -3,10 +3,13 @@ package me.giverplay.games.entity;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class Entity
 {
-  BufferedImage sprite;
+  protected static final Random random = new Random();
+
+  private BufferedImage sprite;
   private String name;
 
   private double x, y, speed, dx, dy;
@@ -14,11 +17,16 @@ public class Entity
 
   public Entity(double x, double y, BufferedImage defaultSprite)
   {
+    this(x, y, 16, 16, defaultSprite);
+  }
+
+  public Entity(double x, double y, int width, int height, BufferedImage defaultSprite)
+  {
     this.x = x;
     this.y = y;
     this.speed = 2D;
-    this.width = 16;
-    this.height = 16;
+    this.width = width;
+    this.height = height;
     this.sprite = defaultSprite;
   }
 
@@ -45,6 +53,16 @@ public class Entity
   public void setMaskWidth(int maskWidth)
   {
     this.maskWidth = maskWidth;
+  }
+
+  public void reflectDx()
+  {
+    dx *= -1;
+  }
+
+  public void reflectDy()
+  {
+    dy *= -1;
   }
 
   public void setY(double y)
@@ -152,6 +170,26 @@ public class Entity
     this.height = height;
   }
 
+  public double nextX()
+  {
+    return x + speed;
+  }
+
+  public double previousX()
+  {
+    return x - speed;
+  }
+
+  public double nextY()
+  {
+    return y + speed;
+  }
+
+  public double previousY()
+  {
+    return y - speed;
+  }
+
   public int getXInt()
   {
     return (int) this.x;
@@ -164,7 +202,17 @@ public class Entity
 
   public Rectangle getCollisionBox()
   {
-    return new Rectangle(getXInt() + maskX, getYInt() + maskY, getXInt() + width - maskWidth, getYInt() + height - maskHeight);
+    return new Rectangle(getXInt() + maskX, getYInt() + maskY, width - maskWidth, height - maskHeight);
+  }
+
+  public Rectangle getNextCollisionBox()
+  {
+    return new Rectangle((int) nextX() + maskX, (int) nextY() + maskY, width - maskWidth, height - maskHeight);
+  }
+
+  public Rectangle getPreviousCollisionBox()
+  {
+    return new Rectangle((int) previousX() + maskX, (int) previousY() + maskY, width - maskWidth, height - maskHeight);
   }
 
   public boolean isCollliding(Entity entity)
@@ -180,6 +228,16 @@ public class Entity
   public void setSprite(BufferedImage sprite)
   {
     this.sprite = sprite;
+  }
+
+  public boolean checkPossibility(int percent)
+  {
+    return checkPossibility(percent, 100);
+  }
+
+  public boolean checkPossibility(int min, int max)
+  {
+    return random.nextInt(max) < min;
   }
 
   public void tick()

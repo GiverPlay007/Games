@@ -1,9 +1,6 @@
 package me.giverplay.games.menu;
 
-import jdk.nashorn.internal.runtime.ECMAException;
-import me.giverplay.games.Main;
 import me.giverplay.games.game.GameBase;
-import me.giverplay.games.game.GameMenu;
 
 import java.awt.Color;
 import java.awt.Font;

@@ -1,8 +1,9 @@
-package me.giverplay.games.game;
+package me.giverplay.games.menu;
 
-import me.giverplay.games.games.pong.Pong;
+import me.giverplay.games.game.GameBase;
+import me.giverplay.games.game.GameTask;
+import me.giverplay.games.bundled.pong.Pong;
 import me.giverplay.games.graphics.Spritesheet;
-import me.giverplay.games.menu.Option;
 
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
@@ -116,36 +117,6 @@ public class GameMenu extends Canvas implements MouseInputListener, Runnable
     }
   }
 
-  @Override
-  public void run()
-  {
-    while(!runningGame)
-    {
-      update();
-      draw();
-
-      try
-      {
-        Thread.sleep(50);
-      }
-      catch (InterruptedException e)
-      {
-        e.printStackTrace();
-      }
-    }
-  }
-
-  public void stopGame()
-  {
-    runningGame = false;
-    gameThread.interrupt();
-
-    game = null;
-    menuThread = new Thread(this);
-    menuThread.start();
-    showFrame();
-  }
-
   public boolean isRunningGame()
   {
     return runningGame;
@@ -169,9 +140,39 @@ public class GameMenu extends Canvas implements MouseInputListener, Runnable
       {
         menuThread.join();
       }
-      catch(InterruptedException e2)
+      catch (InterruptedException e)
       {
-        e2.printStackTrace();
+        e.printStackTrace();
+      }
+    }
+  }
+
+  public void stopGame()
+  {
+    runningGame = false;
+    gameThread.interrupt();
+    game = null;
+    menuThread = new Thread(this);
+    menuThread.start();
+
+    showFrame();
+  }
+
+  @Override
+  public void run()
+  {
+    while(!runningGame)
+    {
+      update();
+      draw();
+
+      try
+      {
+        Thread.sleep(50);
+      }
+      catch (InterruptedException e)
+      {
+        e.printStackTrace();
       }
     }
   }
