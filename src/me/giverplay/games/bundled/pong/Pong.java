@@ -9,6 +9,7 @@ import me.giverplay.games.bundled.pong.entities.Player;
 import me.giverplay.games.game.KeyBind;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -20,19 +21,30 @@ public class Pong extends GameBase
 
   private KeyBind keyBind;
   private Player player;
+  private State state;
   private Enemy enemy;
   private Ball ball;
 
+  private Graphics screenGraphics;
   private BufferedImage screen;
   private Graphics graphics;
-  private Graphics screenGraphics;
+
+  private String enter = "Press Enter to restart";
+  private String gameOver = "Game Over";
+  private String victory = "Point!";
+
+  private boolean gameOverShowing;
+
+  private int maxGameOverFrames = 30;
+  private int gameOverFrames = 0;
+  private int score;
 
   public Pong(String name, BufferedImage icon)
   {
     super(name, icon, WIDTH, HEIGHT, SCALE);
 
     setup();
-    initiate();
+    initialize();
   }
 
   private void setup()
@@ -46,31 +58,45 @@ public class Pong extends GameBase
     keyBind = new KeyBind(this);
   }
 
-  private void initiate()
+  private void initialize()
   {
+    gameOverFrames = 0;
+    gameOverShowing = false;
+    score = 0;
     player = new Player(4, getScaledHeight() / 2, this);
-    enemy = new Enemy(getScaledWidth() - 30, getScaledHeight() / 2, this);
+    enemy = new Enemy(getScaledWidth() - 9, getScaledHeight() / 2, this);
     ball = new Ball(getScaledWidth() / 2, getScaledHeight() / 2, this);
     enemy.fixInstance(ball);
+    state = State.RUNNING;
   }
 
   @Override
   public void tick()
   {
-    if(!hasFocus())
+    if(state == State.RUNNING)
     {
-      requestFocus();
-    }
+      if (!hasFocus())
+      {
+        requestFocus();
+      }
 
-    if(!getFrame().isVisible())
+      if (!getFrame().isVisible())
+      {
+        destroy();
+        return;
+      }
+
+      player.tick();
+      enemy.tick();
+      ball.tick();
+    }
+    else
     {
-      destroy();
-      return;
+      if(keyBind.enter.isPressed())
+      {
+        initialize();
+      }
     }
-
-    player.tick();
-    enemy.tick();
-    ball.tick();
   }
 
   public Ball getBall()
@@ -80,7 +106,17 @@ public class Pong extends GameBase
 
   public void point(Entity entity)
   {
-    initiate();
+    state = (entity instanceof Player ? State.VICTORY : State.GAME_OVER);
+  }
+
+  public void markScore()
+  {
+    score++;
+  }
+
+  public int getScore()
+  {
+    return this.score;
   }
 
   public Enemy getEnemy()
@@ -109,7 +145,43 @@ public class Pong extends GameBase
     ball.render(screenGraphics);
 
     graphics.drawImage(screen, 0, 0, getScaledWidth(), getScaledHeight(), null);
+
+    graphics.setColor(Color.WHITE);
+    graphics.setFont(new Font("arial", Font.PLAIN, 12));
+    graphics.drawString("Score: " + score, 16, 16);
+
+    if(state != State.RUNNING)
+    {
+      gameOverFrames++;
+
+      if(gameOverFrames >= maxGameOverFrames)
+      {
+        gameOverFrames = 0;
+        gameOverShowing = !gameOverShowing;
+      }
+
+      String txt = state == State.GAME_OVER ? gameOver : victory;
+
+      graphics.setColor(new Color(0, 0, 0, 100));
+      graphics.fillRect(0, 0, getScaledWidth(), getScaledHeight());
+
+      graphics.setColor(Color.WHITE);
+      graphics.setFont(new Font("Arial", Font.BOLD, 32));
+      graphics.drawString(txt, textStart(txt), getScaledHeight() / 2 -32);
+
+      if(gameOverShowing)
+      {
+        graphics.setFont(new Font("Arial", Font.BOLD, 18));
+        graphics.drawString(enter, textStart(enter), getScaledHeight() / 2 + 4);
+      }
+    }
+
     getBufferStrategy().show();
+  }
+
+  private int textStart(String txt)
+  {
+    return (getScaledWidth() - graphics.getFontMetrics().stringWidth(txt)) / 2;
   }
 
   @Override

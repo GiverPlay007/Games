@@ -1,5 +1,7 @@
 package me.giverplay.games.entity;
 
+import me.giverplay.games.game.GameBase;
+
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -9,22 +11,24 @@ public class Entity
 {
   protected static final Random random = new Random();
 
+  private GameBase game;
   private BufferedImage sprite;
   private String name;
 
   private double x, y, speed, dx, dy;
   private int maskX, maskY, height, width, maskWidth, maskHeight;
 
-  public Entity(double x, double y, BufferedImage defaultSprite)
+  public Entity(double x, double y, BufferedImage defaultSprite, GameBase game)
   {
-    this(x, y, 16, 16, defaultSprite);
+    this(x, y, 16, 16, defaultSprite, game);
   }
 
-  public Entity(double x, double y, int width, int height, BufferedImage defaultSprite)
+  public Entity(double x, double y, int width, int height, BufferedImage defaultSprite, GameBase game)
   {
     this.x = x;
     this.y = y;
     this.speed = 2D;
+    this.game = game;
     this.width = width;
     this.height = height;
     this.sprite = defaultSprite;
@@ -123,6 +127,16 @@ public class Entity
   public int getHeight()
   {
     return height;
+  }
+
+  public int getScaledWidth()
+  {
+    return width * game.getScale();
+  }
+
+  public int getScaledHeight()
+  {
+    return height * game.getScale();
   }
 
   public int getWidth()

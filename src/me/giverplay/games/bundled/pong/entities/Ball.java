@@ -14,19 +14,20 @@ public class Ball extends Entity
 
   public Ball(int x, int y, Pong game)
   {
-    super(x, y, 10, 10, null);
+    super(x, y, 12, 12, null, game);
 
     this.game = game;
     this.enemy = game.getEnemy();
     this.player = game.getPlayer();
 
-    setSpeed(10);
-    createAngle();
+    setSpeed(8);
+    createAngle(65, 115);
   }
 
-  public void createAngle()
+  public void createAngle(int min, int max)
   {
-    int angle = random.nextInt(360);
+    int angle = random.nextInt(max - min) + min;
+
     setDx(Math.cos(Math.toRadians(angle)));
     setDy(Math.sin(Math.toRadians(angle)));
   }
@@ -36,13 +37,13 @@ public class Ball extends Entity
   {
     if(getDx() > 0)
     {
-      if(nextX() + getDx() + getWidth() < game.getScaledWidth())
+      if(getX() + getWidth() + getDx() * getSpeed() < game.getScaledWidth() -1)
       {
         moveX(getDx() * getSpeed());
       }
       else
       {
-        while(getX() + getWidth() < game.getScaledWidth())
+        while(getX() + getWidth() < game.getScaledWidth() -1)
         {
           moveX(1);
         }
@@ -52,13 +53,13 @@ public class Ball extends Entity
     }
     else if(getDx() < 0)
     {
-      if(getX() + getDx() > 0)
+      if(getX() + getDx() * getSpeed() > 1)
       {
         moveX(getSpeed() * getDx());
       }
       else
       {
-        while (getX() > 0)
+        while (getX() > 1)
         {
           moveX(-1);
         }
@@ -69,13 +70,13 @@ public class Ball extends Entity
 
     if(getDy() > 0)
     {
-      if(getY() + getDy() + getHeight() < game.getScaledHeight())
+      if(getY() + getHeight() + getDy() * getSpeed() < game.getScaledHeight() -1)
       {
         moveY(getDy() * getSpeed());
       }
       else
       {
-        while(getY() + getHeight() < game.getScaledHeight())
+        while(getY() + getHeight() < game.getScaledHeight() -1)
         {
           moveY(1);
         }
@@ -85,27 +86,64 @@ public class Ball extends Entity
     }
     else if(getDy() < 0)
     {
-      if(getY() + getDy() > 0)
+      if(getY() + getDy() * getSpeed() > 1)
       {
         moveY(getDy() * getSpeed());
       }
       else
       {
-        while (getY() > 0)
+        while (getY() > 1)
         {
           moveY(-1);
         }
+
         reflectDy();
       }
     }
 
-    if(getX() < 0)
+    if (getCollisionBox().intersects(player.getCollisionBox()))
+    {
+      if (checkPossibility(20))
+      {
+        createAngle(65, 135);
+      }
+      else
+      {
+        reflectDx();
+      }
+
+      while(getX() <= player.getX() + player.getWidth())
+      {
+        moveX(1);
+      }
+
+      game.markScore();
+    }
+
+    if(getCollisionBox().intersects(enemy.getCollisionBox()))
+    {
+      if(checkPossibility(20))
+      {
+        createAngle(200, 340);
+      }
+      else
+      {
+        reflectDx();
+      }
+
+      while(getX() >= enemy.getX())
+      {
+        moveX(-1);
+      }
+    }
+
+    if(getX() <= 1)
     {
       game.point(enemy);
     }
-    else if(getX() + getWidth() > game.getScaledWidth())
+    else if(getX() + getWidth() >= game.getScaledWidth() -1)
     {
-      game.point(player);
+     game.point(player);
     }
   }
 

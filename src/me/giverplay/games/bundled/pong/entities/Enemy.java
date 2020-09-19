@@ -13,16 +13,21 @@ public class Enemy extends Entity
 
   public Enemy(int x, int y, Pong game)
   {
-    super(x, y, 20, 140, null);
+    super(x, y, 5, 64, null, game);
 
     this.game = game;
 
-    setSpeed(5);
+    setSpeed(8);
   }
 
   @Override
   public void tick()
   {
+    if(ball.getX() < (float) game.getScaledWidth() / 2)
+    {
+      return;
+    }
+
     if(nextY() + (float) (getHeight() / 2) >= ball.getY())
     {
       if(!(previousY() <= 0))

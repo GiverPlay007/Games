@@ -26,12 +26,12 @@ public abstract class GameBase extends Canvas
 
   private void setupFrame()
   {
+    this.setPreferredSize(new Dimension(w * scale, h * scale));
     frame = new JFrame(name);
     frame.add(this);
     frame.setIconImage(icon);
     frame.setResizable(false);
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    frame.setPreferredSize(new Dimension(w * scale, h * scale));
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);

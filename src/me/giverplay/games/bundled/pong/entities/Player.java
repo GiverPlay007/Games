@@ -14,12 +14,12 @@ public class Player extends Entity
 
   public Player(int x, int y, Pong game)
   {
-    super(x, y, 20, 140, null);
+    super(x, y, 5, 64, null, game);
 
     this.game = game;
     this.keyBind = game.getKeyBind();
 
-    setSpeed(5);
+    setSpeed(10);
   }
 
   @Override
