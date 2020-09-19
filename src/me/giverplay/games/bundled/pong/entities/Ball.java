@@ -20,7 +20,7 @@ public class Ball extends Entity
     this.enemy = game.getEnemy();
     this.player = game.getPlayer();
 
-    setSpeed(20);
+    setSpeed(10);
     createAngle();
   }
 
@@ -34,34 +34,76 @@ public class Ball extends Entity
   @Override
   public void tick()
   {
-    if(nextX() + getWidth() >= game.getScaledWidth() -1)
+    if(getDx() > 0)
     {
-      reflectDx();
+      if(nextX() + getDx() + getWidth() < game.getScaledWidth())
+      {
+        moveX(getDx() * getSpeed());
+      }
+      else
+      {
+        while(getX() + getWidth() < game.getScaledWidth())
+        {
+          moveX(1);
+        }
+
+        reflectDx();
+      }
+    }
+    else if(getDx() < 0)
+    {
+      if(getX() + getDx() > 0)
+      {
+        moveX(getSpeed() * getDx());
+      }
+      else
+      {
+        while (getX() > 0)
+        {
+          moveX(-1);
+        }
+
+        reflectDx();
+      }
     }
 
-    if(previousX() <= 0)
+    if(getDy() > 0)
     {
-      reflectDx();
+      if(getY() + getDy() + getHeight() < game.getScaledHeight())
+      {
+        moveY(getDy() * getSpeed());
+      }
+      else
+      {
+        while(getY() + getHeight() < game.getScaledHeight())
+        {
+          moveY(1);
+        }
+
+        reflectDy();
+      }
+    }
+    else if(getDy() < 0)
+    {
+      if(getY() + getDy() > 0)
+      {
+        moveY(getDy() * getSpeed());
+      }
+      else
+      {
+        while (getY() > 0)
+        {
+          moveY(-1);
+        }
+        reflectDy();
+      }
     }
 
-    if(nextY() + getHeight() >= game.getScaledHeight() -1)
-    {
-      reflectDy();
-    }
-
-    if(previousY() <= 0)
-    {
-      reflectDy();
-    }
-
-    moveX(getDx() * getSpeed());
-    moveY(getDy() * getSpeed());
-
-    if(getX() <= 0)
+    if(getX() < 0)
     {
       game.point(enemy);
     }
-    else if(getX() + getWidth() >= game.getScaledWidth())
+    else if(getX() + getWidth() > game.getScaledWidth())
     {
       game.point(player);
     }
