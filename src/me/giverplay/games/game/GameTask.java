@@ -5,10 +5,10 @@ import me.giverplay.games.menu.GameMenu;
 
 public class GameTask implements Runnable
 {
-  private GameBase game;
-  private GameMenu menu;
+  private final GameBase game;
+  private final GameMenu menu;
 
-  private int ticks, fps, currentFPS, currentTicks;
+  private int ticks, fps, fpsAvg, tps;
 
   public GameTask()
   {
@@ -35,8 +35,8 @@ public class GameTask implements Runnable
       while(unprocessed >= 1)
       {
         game.tick();
-        ticks++;
-        unprocessed--;
+        ++ticks;
+        --unprocessed;
       }
 
       fps++;
@@ -44,8 +44,8 @@ public class GameTask implements Runnable
 
       if(System.currentTimeMillis() - timer >= 1000)
       {
-        currentFPS = fps;
-        currentTicks = ticks;
+        fpsAvg = fps;
+        tps = ticks;
         fps = 0;
         ticks = 0;
         timer += 1000;
@@ -53,13 +53,13 @@ public class GameTask implements Runnable
     }
   }
 
-  public int getCurrentFPS()
+  public int getFpsAvg()
   {
-    return currentFPS;
+    return fpsAvg;
   }
 
-  public int getCurrentTicks()
+  public int getTps()
   {
-    return currentTicks;
+    return tps;
   }
 }
